@@ -24,6 +24,25 @@ class Bullet {
     }
 }
 
+class Explosion {
+    pos: Vector2
+    time: number
+    parent: number
+    constructor(pos: Vector2, time: number, parent: number) {
+        this.pos = pos
+        this.time = time
+        this.parent = parent
+        explosions.push(this)
+    }
+    draw() {
+        for (let y = -1; y <= 1; y++) {
+            for (let x = -1; x <= 1; x++) {
+                led.plot(this.pos.x + x, this.pos.y + y)
+            }
+        }
+    }
+}
+
 class Player {
     pos: Vector2
     dir: String
@@ -44,7 +63,7 @@ class Player {
     }
 }
 
-let player = new Player(new Vector2(0, 0), 'up', 5, 0, 1, Math.random())
+let player = new Player(new Vector2(0, 0), 'up', 5, 0, 2, Math.random())
 
 let players: Player[] = []
 
@@ -57,6 +76,7 @@ let buttons = {
 }
 
 let bullets: Bullet[] = []
+let explosions: Explosion[] = []
 
 function clear() {
     for (let x = 0; x < 5; x++) {
@@ -67,8 +87,8 @@ function clear() {
 }
 
 function run() {
+    console.log(explosions.length)
     clear()
-    console.log(bullets.length)
     buttons.a = input.buttonIsPressed(Button.A)
     buttons.b = input.buttonIsPressed(Button.B)
     for (let i of bullets) {
@@ -96,6 +116,23 @@ function run() {
         }
         if ([0, 1, 2, 3, 4].indexOf(i.pos.x) == -1 || [0, 1, 2, 3, 4].indexOf(i.pos.y) == -1) {
             bullets.splice(bullets.indexOf(i), 1)
+        }
+        i.draw()
+    }
+    for (let i of explosions) {
+        if (i.time < 3) {
+            i.time++
+        } else {
+            explosions.splice(explosions.indexOf(i), 1)
+        }
+        for (let j of players) {
+            for (let y = -1; y <= 1; y++) {
+                for (let x = -1; x <= 1; x++) {
+                    if (new Vector2(i.pos.x + x, i.pos.y + y) == j.pos && i.parent != j.id) {
+                        j.health--
+                    }
+                }
+            }
         }
         i.draw()
     }
@@ -130,7 +167,8 @@ function run() {
                 break
             case 2:
                 // mage
-                // aoe attack (3x3)?
+                // aoe attack (3x3)
+                new Explosion(new Vector2(player.pos.x, player.pos.y), 0, player.id)
                 break
         }
         buttons.u = false
