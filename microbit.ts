@@ -136,6 +136,13 @@ function run() {
         }
         i.draw()
     }
+    if (player.type == 0) {
+        for (let i of players) {
+            if (i.pos == player.pos) {
+                i.health--
+            }
+        }
+    }
     if (buttons.a) {
         player.pos.y--
         player.dir = 'up'
