@@ -43,6 +43,21 @@ class Explosion {
     }
 }
 
+class AfterImage {
+    pos: Vector2
+    time: number
+    parent: number
+    constructor(pos: Vector2, time: number, parent: number) {
+        this.pos = pos
+        this.time = time
+        this.parent = parent
+        afterImages.push(this)
+    }
+    draw() {
+        led.plot(this.pos.x, this.pos.y)
+    }
+}
+
 class Player {
     pos: Vector2
     dir: String
@@ -63,9 +78,9 @@ class Player {
     }
 }
 
-let player = new Player(new Vector2(0, 0), 'up', 5, 0, 2, Math.random())
+let player = new Player(new Vector2(0, 0), 'up', 5, 0, 0, Math.random())
 
-let players: Player[] = []
+let players: Player[] = [player]
 
 let buttons = {
     a: input.buttonIsPressed(Button.A),
@@ -77,6 +92,7 @@ let buttons = {
 
 let bullets: Bullet[] = []
 let explosions: Explosion[] = []
+let afterImages: AfterImage[] = []
 
 function clear() {
     for (let x = 0; x < 5; x++) {
@@ -111,7 +127,6 @@ function run() {
         for (let j of players) {
             if (i.pos == j.pos && i.parent != j.id) {
                 j.health--
-                bullets.splice(bullets.indexOf(i), 1)
             }
         }
         if ([0, 1, 2, 3, 4].indexOf(i.pos.x) == -1 || [0, 1, 2, 3, 4].indexOf(i.pos.y) == -1) {
@@ -120,8 +135,8 @@ function run() {
         i.draw()
     }
     for (let i of explosions) {
-        if (i.time < 3) {
-            i.time++
+        if (i.time > 0) {
+            i.time--
         } else {
             explosions.splice(explosions.indexOf(i), 1)
         }
@@ -132,6 +147,19 @@ function run() {
                         j.health--
                     }
                 }
+            }
+        }
+        i.draw()
+    }
+    for (let i of afterImages) {
+        if (i.time > 0) {
+            i.time--
+        } else {
+            afterImages.splice(afterImages.indexOf(i), 1)
+        }
+        for (let j of players) {
+            if (i.pos == j.pos) {
+                j.health--
             }
         }
         i.draw()
@@ -166,6 +194,32 @@ function run() {
             case 0:
                 // fighter
                 // dash?
+                switch (player.dir) {
+                    case 'up':
+                        player.pos.y -= 3
+                        new AfterImage(new Vector2(player.pos.x, player.pos.y + 1), 3, player.id)
+                        new AfterImage(new Vector2(player.pos.x, player.pos.y + 2), 2, player.id)
+                        new AfterImage(new Vector2(player.pos.x, player.pos.y + 3), 1, player.id)
+                        break
+                    case 'down':
+                        player.pos.y += 3
+                        new AfterImage(new Vector2(player.pos.x, player.pos.y - 1), 3, player.id)
+                        new AfterImage(new Vector2(player.pos.x, player.pos.y - 2), 2, player.id)
+                        new AfterImage(new Vector2(player.pos.x, player.pos.y - 3), 1, player.id)
+                        break
+                    case 'left':
+                        player.pos.x -= 3
+                        new AfterImage(new Vector2(player.pos.x + 1, player.pos.y), 3, player.id)
+                        new AfterImage(new Vector2(player.pos.x + 2, player.pos.y), 2, player.id)
+                        new AfterImage(new Vector2(player.pos.x + 3, player.pos.y), 1, player.id)
+                        break
+                    case 'right':
+                        player.pos.x += 3
+                        new AfterImage(new Vector2(player.pos.x - 1, player.pos.y), 3, player.id)
+                        new AfterImage(new Vector2(player.pos.x - 2, player.pos.y), 2, player.id)
+                        new AfterImage(new Vector2(player.pos.x - 3, player.pos.y), 1, player.id)
+                        break
+                }
                 break
             case 1:
                 // gunner
@@ -175,7 +229,7 @@ function run() {
             case 2:
                 // mage
                 // aoe attack (3x3)
-                new Explosion(new Vector2(player.pos.x, player.pos.y), 0, player.id)
+                new Explosion(new Vector2(player.pos.x, player.pos.y), 3, player.id)
                 break
         }
         buttons.u = false
