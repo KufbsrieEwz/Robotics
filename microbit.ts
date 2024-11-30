@@ -1,3 +1,82 @@
+radio.setGroup(0)
+
+/*
+function decodeRadioValues(message: String) {
+    let decoded: {[key: string]: any} = {}
+    let values: any[] = message.split(';')
+    for (let i = 0; i < values.length; i++) {
+        values[i] = values[i].split('=')
+        if (values[i][0][0] == ' ') {
+            values[i][0] = values[i][0].split(' ')[1]
+        }
+        decoded[values[i][0]] = JSON.parse(values[i][1])
+    }
+    return decoded
+}
+*/
+
+function getById(array: any[], id: number) {
+    for (let i of array) {
+        if (i.id == id || i.parent == id) return array.indexOf(i)
+    }
+    return -1
+}
+
+function decodeRadio(message: String) {
+    let split: String[] = message.split(' ')
+    switch (split[0]) {
+        case 'new':
+            switch (split[1]) {
+                case 'Player':
+                    players.push(new Player(new Vector2(+split[2].split(',')[0], +split[2].split(',')[1]), split[2].split(',')[2], +split[2].split(',')[3], +split[2].split(',')[4], +split[2].split(',')[5], +split[2].split(',')[6]))
+                    break
+                case 'AfterImage':
+                    new AfterImage(new Vector2(+split[2].split(',')[0], +split[2].split(',')[1]), +split[2].split(',')[2], +split[2].split(',')[3])
+                    break
+                case 'Bullet':
+                    new Bullet(new Vector2(+split[2].split(',')[0], +split[2].split(',')[1]), split[2].split(',')[3], +split[2].split(',')[4], +split[2].split(',')[5])
+                    break
+                case 'Explosion':
+                    new AfterImage(new Vector2(+split[2].split(',')[0], +split[2].split(',')[1]), +split[2].split(',')[2], +split[2].split(',')[3])
+                    break
+            }
+            break
+        case 'edit':
+            switch (split[1]) {
+                case 'players':
+                    players[getById(players, +split[2])] = new Player(new Vector2(+split[3].split(',')[0], +split[3].split(',')[1]), split[3].split(',')[2], +split[3].split(',')[4], +split[3].split(',')[5], +split[3].split(',')[6], +split[3].split(',')[7])
+                    break
+            }
+            break
+        default:
+            break
+    }
+}
+
+/*
+radio message format:
+(1)
+
+new = make new object
+||
+edit = change object that exists
+
+(2)
+
+class
+
+(3)
+
+(parameters)
+||
+`id: ${id}`
+
+(4)
+
+||
+(parameters)
+*/
+
 class Vector2 {
     x: number
     y: number
@@ -78,7 +157,7 @@ class Player {
     }
 }
 
-let player = new Player(new Vector2(0, 0), 'up', 5, 0, 0, Math.random())
+let player = new Player(new Vector2(0, 0), 'up', 5, 0, 2, Math.random())
 
 let players: Player[] = [player]
 
