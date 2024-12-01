@@ -53,6 +53,8 @@ function decodeRadio(message: String) {
     }
 }
 
+radio.onReceivedString(decodeRadio)
+
 /*
 radio message format:
 (1)
@@ -73,9 +75,12 @@ class
 
 (4)
 
+
 ||
 (parameters)
 */
+
+// example: 'new Player 0,0,up,5,0,2,1' creates a new player at 0, 0, (top left), facing up, with 5 health, 0 deciseconds of being alive, the mage class, and with an id of 1
 
 class Vector2 {
     x: number
@@ -182,7 +187,6 @@ function clear() {
 }
 
 function run() {
-    console.log(explosions.length)
     clear()
     buttons.a = input.buttonIsPressed(Button.A)
     buttons.b = input.buttonIsPressed(Button.B)
@@ -272,7 +276,7 @@ function run() {
         switch (player.type) {
             case 0:
                 // fighter
-                // dash?
+                // dash
                 switch (player.dir) {
                     case 'up':
                         player.pos.y -= 3
@@ -302,7 +306,7 @@ function run() {
                 break
             case 1:
                 // gunner
-                // shoot bullet in last moved direction
+                // shoot bullet
                 new Bullet(new Vector2(player.pos.x, player.pos.y), player.dir, 1, player.id)
                 break
             case 2:
@@ -330,6 +334,6 @@ input.onGesture(Gesture.TiltRight, function () {
     buttons.r = true
 })
 
-input.onGesture(Gesture.Shake, function() {
+input.onGesture(Gesture.Shake, function () {
     buttons.u = true
 })
