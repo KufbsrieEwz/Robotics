@@ -251,26 +251,32 @@ function run() {
         for (let i of players) {
             if (i.pos == player.pos) {
                 i.health--
+                radio.sendString(`edit players ${i.id} ${i.pos.x},${i.pos.y},${i.dir},${i.health},${i.time},${i.type},${i.id}`)
+                // example: 'edit players id x,y,dir,health,time,type,id'
             }
         }
     }
     if (buttons.a) {
         player.pos.y--
         player.dir = 'up'
+        radio.sendString(`edit players ${player.id} ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
     }
     if (buttons.b) {
         player.pos.y++
         player.dir = 'down'
+        radio.sendString(`edit players ${player.id} ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
     }
     if (buttons.l) {
         player.pos.x--
         player.dir = 'left'
         buttons.l = false
+        radio.sendString(`edit players ${player.id} ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
     }
     if (buttons.r) {
         player.pos.x++
         player.dir = 'right'
         buttons.r = false
+        radio.sendString(`edit players ${player.id} ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
     }
     if (buttons.u) {
         switch (player.type) {
@@ -283,24 +289,28 @@ function run() {
                         new AfterImage(new Vector2(player.pos.x, player.pos.y + 1), 3, player.id)
                         new AfterImage(new Vector2(player.pos.x, player.pos.y + 2), 2, player.id)
                         new AfterImage(new Vector2(player.pos.x, player.pos.y + 3), 1, player.id)
+                        radio.sendString(`edit players ${player.id} ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
                         break
                     case 'down':
                         player.pos.y += 3
                         new AfterImage(new Vector2(player.pos.x, player.pos.y - 1), 3, player.id)
                         new AfterImage(new Vector2(player.pos.x, player.pos.y - 2), 2, player.id)
                         new AfterImage(new Vector2(player.pos.x, player.pos.y - 3), 1, player.id)
+                        radio.sendString(`edit players ${player.id} ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
                         break
                     case 'left':
                         player.pos.x -= 3
                         new AfterImage(new Vector2(player.pos.x + 1, player.pos.y), 3, player.id)
                         new AfterImage(new Vector2(player.pos.x + 2, player.pos.y), 2, player.id)
                         new AfterImage(new Vector2(player.pos.x + 3, player.pos.y), 1, player.id)
+                        radio.sendString(`edit players ${player.id} ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
                         break
                     case 'right':
                         player.pos.x += 3
                         new AfterImage(new Vector2(player.pos.x - 1, player.pos.y), 3, player.id)
                         new AfterImage(new Vector2(player.pos.x - 2, player.pos.y), 2, player.id)
                         new AfterImage(new Vector2(player.pos.x - 3, player.pos.y), 1, player.id)
+                        radio.sendString(`edit players ${player.id} ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
                         break
                 }
                 break
@@ -308,11 +318,13 @@ function run() {
                 // gunner
                 // shoot bullet
                 new Bullet(new Vector2(player.pos.x, player.pos.y), player.dir, 1, player.id)
+                radio.sendString(`new Bullet ${player.pos.x},${player.pos.y},${player.dir},1,${player.id}`)
                 break
             case 2:
                 // mage
                 // aoe attack (3x3)
                 new Explosion(new Vector2(player.pos.x, player.pos.y), 3, player.id)
+                radio.sendString(`new Explosion ${player.pos.x},${player.pos.y},3,${player.id}`)
                 break
         }
         buttons.u = false
