@@ -24,27 +24,28 @@ function getById(array: any[], id: number) {
 
 function decodeRadio(message: String) {
     let split: String[] = message.split(' ')
+    let parameters: String[] = split[split.length-1].split(',')
     switch (split[0]) {
         case 'new':
             switch (split[1]) {
                 case 'Player':
-                    players.push(new Player(new Vector2(+split[2].split(',')[0], +split[2].split(',')[1]), split[2].split(',')[2], +split[2].split(',')[3], +split[2].split(',')[4], +split[2].split(',')[5], +split[2].split(',')[6]))
+                    players.push(new Player(new Vector2(+parameters[0], +parameters[1]), parameters[2], +parameters[3], +parameters[4], +parameters[5], +parameters[6]))
                     break
                 case 'AfterImage':
-                    new AfterImage(new Vector2(+split[2].split(',')[0], +split[2].split(',')[1]), +split[2].split(',')[2], +split[2].split(',')[3])
+                    new AfterImage(new Vector2(+parameters[0], +parameters[1]), +parameters[2], +parameters[3])
                     break
                 case 'Bullet':
-                    new Bullet(new Vector2(+split[2].split(',')[0], +split[2].split(',')[1]), split[2].split(',')[3], +split[2].split(',')[4], +split[2].split(',')[5])
+                    new Bullet(new Vector2(+parameters[0], +parameters[1]), parameters[3], +parameters[4], +parameters[5])
                     break
                 case 'Explosion':
-                    new AfterImage(new Vector2(+split[2].split(',')[0], +split[2].split(',')[1]), +split[2].split(',')[2], +split[2].split(',')[3])
+                    new AfterImage(new Vector2(+parameters[0], +parameters[1]), +parameters[2], +parameters[3])
                     break
             }
             break
         case 'edit':
             switch (split[1]) {
                 case 'players':
-                    players[getById(players, +split[2])] = new Player(new Vector2(+split[3].split(',')[0], +split[3].split(',')[1]), split[3].split(',')[2], +split[3].split(',')[4], +split[3].split(',')[5], +split[3].split(',')[6], +split[3].split(',')[7])
+                    players[getById(players, +split[2])] = new Player(new Vector2(+parameters[0], +parameters[1]), parameters[2], +parameters[3], +parameters[4], +parameters[5], +parameters[6])
                     break
             }
             break
@@ -53,7 +54,9 @@ function decodeRadio(message: String) {
     }
 }
 
-radio.onReceivedString(decodeRadio)
+radio.onReceivedString(function(receivedString: string) {
+    decodeRadio(receivedString)
+})
 
 /*
 radio message format:
@@ -187,6 +190,7 @@ function clear() {
 }
 
 function run() {
+    console.log(players)
     clear()
     buttons.a = input.buttonIsPressed(Button.A)
     buttons.b = input.buttonIsPressed(Button.B)
@@ -245,6 +249,9 @@ function run() {
                 j.health--
             }
         }
+        i.draw()
+    }
+    for (let i of players) {
         i.draw()
     }
     if (player.type == 0) {
@@ -330,10 +337,12 @@ function run() {
         buttons.u = false
     }
     player.draw()
+    // players[0] = player
 }
 
 function start() {
     loops.everyInterval(100, run)
+    radio.sendString(`new Player ${player.pos.x},${player.pos.y},${player.dir},${player.health},${player.time},${player.type},${player.id}`)
 }
 
 start()
